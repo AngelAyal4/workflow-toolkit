@@ -441,7 +441,7 @@ esac
 
 # Ventana 1: Hermes (chat interactivo en directorio del proyecto)
 tmux new-session -d -s "$SESSION" -c "$PROJECT_PATH" -n "$PROJECT_TYPE-hermes"
-tmux send-keys -t "$SESSION:1.1" "cd $PROJECT_PATH && hermes chat --in $PROJECT_PATH --model meituan/longcat-2.0:free --reasoning xhigh" C-m
+tmux send-keys -t "$SESSION:1.1" "cd $PROJECT_PATH && hermes chat --in $PROJECT_PATH --profile richard-dev --model meituan/longcat-2.0:free --reasoning max" C-m
 
 # Ventana 2: OpenCode CLI — modo plan
 tmux new-window -t "$SESSION" -n "opencode-plan"
