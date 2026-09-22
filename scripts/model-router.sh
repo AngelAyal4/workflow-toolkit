@@ -19,7 +19,7 @@ MODELS_LOCAL_PLAN="ollama/deepseek-v4-flash"
 MODELS_LOCAL_BUILD="ollama/llama2-uncensored"
 MODELS_LOCAL_TEST="ollama/llama2-uncensored"
 
-# Modelo para Hermes (Kaspian)
+# Modelo para Hermes (Richard)
 MODEL_HERMES="meituan/longcat-2.0:free"
 
 # Función: verificar si OpenCode Go está disponible

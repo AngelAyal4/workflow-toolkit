@@ -30,7 +30,7 @@ Workflow Toolkit es un **ecosistema de desarrollo** que organiza tu entorno de t
 |---|---|
 | **Bootstrap en una pasada** | `./setup.sh` instala y configura todo el entorno |
 | **agentWorkspace** | Sistema de specs, planes y orquestación multi-area para desarrollo autónomo |
-| **ChiefAgent (Kaspian)** | Orquestador que delega specs a OpenCode y verifica criterios de éxito |
+| **ChiefAgent (Richard)** | Orquestador que delega specs a OpenCode y verifica criterios de éxito |
 | **Multi-agent workflow** | Hermes (main specs) + OpenCode (plan-build-qa) + agentes especializados |
 | **Skills de Hermes** | organic-routing, auto-memory, sdd-workflow, skill-style-guide, chief-agent, spec-storm |
 | **Memoria persistente** | Session summaries automáticas, contexto cross-session |
@@ -121,16 +121,16 @@ Estructura generada:
 ### Flujo agentWorkspace + ChiefAgent
 
 ```
-1. SESIÓN PRINCIPAL (Angel + Kaspian)
+1. SESIÓN PRINCIPAL (Angel + Richard)
    └── Spec storm: definen todos los specs del proyecto
-   └── Kaspian infiere DAG de los depends_on
+   └── Richard infiere DAG de los depends_on
    └── Se crea agentWorkspace/ completo
 
 2. APROBACIÓN
-   └── Kaspian revisa cada spec vs criterios globales
+   └── Richard revisa cada spec vs criterios globales
    └── Si todo OK → ChiefAgent toma el control
 
-3. EJECUCIÓN AUTÓNOMA (ChiefAgent = Kaspian)
+3. EJECUCIÓN AUTÓNOMA (ChiefAgent = Richard)
    └── Lee plan maestro
    └── Por cada fase:
        a. Toma spec de área X
@@ -154,7 +154,7 @@ Las skills se cargan automáticamente en cada sesión de Hermes:
 | **auto-memory** | Al finalizar sesiones significativas | Guarda session summaries con decisiones, descubrimientos y contexto |
 | **sdd-workflow** | Cuando el usuario dice "use SDD" | Ejecuta el flujo completo de Spec-Driven Development |
 | **skill-style-guide** | Al crear/refactorar skills | Estándar LLM-first para authoring consistente |
-| **chief-agent** | Cuando Kaspian orquesta agentWorkspace | Spec storm, DAG, delegación a OpenCode, verificación |
+| **chief-agent** | Cuando Richard orquesta agentWorkspace | Spec storm, DAG, delegación a OpenCode, verificación |
 
 ---
 

@@ -39,7 +39,7 @@ La **frontera** (frontier) son todas las decisiones cuyos prerequisitos ya está
 
 Se trabaja en rondas. En cada ronda:
 
-1. Kaspian identifica la frontera actual
+1. Richard identifica la frontera actual
 2. Formula todas las preguntas de la frontera en **una sola ronda**
 3. Da su respuesta recomendada
 4. Espera la respuesta del usuario
@@ -54,7 +54,7 @@ Cada pregunta se formatea así:
 ❓ **Q1** — **<título>**:
 <cuerpo de la pregunta, puede tener múltiples opciones>
 
-➡️ **Recomendación**: <la opción que Kaspian recomienda y por qué>
+➡️ **Recomendación**: <la opción que Richard recomienda y por qué>
 
 ---
 
@@ -70,28 +70,28 @@ Si una pregunta **depende** de otra pregunta que todavía está abierta, va en l
 
 **Test de niebla vs ticket:** ¿Puedo formular la pregunta con precisión ahora mismo? Si sí → es pregunta de esta ronda. Si no → va a una ronda posterior cuando la información esté disponible.
 
-### Rol de Kaspian
+### Rol de Richard
 
-- **NO delegar investigación**: Si Kaspian puede buscar un hecho (filesystem, docs, codebase), lo hace él. No le pide al usuario buscar nada.
-- **Decisiones son del usuario**: Las preguntas son para que el usuario decida, no para que Kaspian adivine.
+- **NO delegar investigación**: Si Richard puede buscar un hecho (filesystem, docs, codebase), lo hace él. No le pide al usuario buscar nada.
+- **Decisiones son del usuario**: Las preguntas son para que el usuario decida, no para que Richard adivine.
 - **Recomendaciones**: Cada pregunta incluye una recomendación razonada, no solo opciones.
 
 ## Criterio de Parada
 
 El spec storm termina cuando la **frontera está vacía**: cada rama del árbol fue visitada, nada queda asumido sin confirmar.
 
-**Kaspian NO pasa a escribir el spec hasta que el usuario confirma que el árbol está completo.**
+**Richard NO pasa a escribir el spec hasta que el usuario confirma que el árbol está completo.**
 
 ## Output Final
 
-Al terminar el spec storm, Kaspian tiene toda la información para escribir un spec completo en `agentWorkspace/{area}/specs/{id}.md` usando el template correspondiente.
+Al terminar el spec storm, Richard tiene toda la información para escribir un spec completo en `agentWorkspace/{area}/specs/{id}.md` usando el template correspondiente.
 
 ## Integración con agentWorkspace
 
 ```
-1. Spec Storm → Kaspian hace rondas de preguntas
+1. Spec Storm → Richard hace rondas de preguntas
 2. Usuario responde en tiempo real
-3. Cuando la frontera está vacía, Kaspian escribe el spec
+3. Cuando la frontera está vacía, Richard escribe el spec
 4. Se repite para cada spec del proyecto
 5. Se ensambla el DAG (plan maestro) desde los depends_on
 6. ChiefAgent toma el control para ejecutar
