@@ -226,6 +226,25 @@ setup_docs() {
     green "  ✓ documentación copiada a ~/workflow-toolkit-configs/docs"
 }
 
+# ---------- 8d. Sync Obsidian (git bidireccional) ---
+setup_obsidian_sync() {
+    banner "Sync Obsidian (git)"
+    mkdir -p "$HOME/scripts"
+    if [ -f "$SCRIPT_DIR/scripts/sync-obsidian.sh" ]; then
+        cp "$SCRIPT_DIR/scripts/sync-obsidian.sh" "$HOME/scripts/"
+        chmod +x "$HOME/scripts/sync-obsidian.sh"
+        green "  ✓ sync-obsidian.sh copiado"
+    else
+        yellow "  ⚠️ sync-obsidian.sh no encontrado en el repo"
+    fi
+
+    # Cron de sync cada 15 minutos (reemplaza backup local)
+    mkdir -p "$HOME/backups/obsidian"
+    (crontab -l 2>/dev/null | grep -v 'backup-obsidian.sh') | crontab -
+    (crontab -l 2>/dev/null; echo "*/15 * * * * \${HOME}/scripts/sync-obsidian.sh >> \${HOME}/backups/obsidian/sync.log 2>&1") | crontab
+    green "  ✓ cron sync cada 15 min configurado"
+}
+
 # ---------- 9. Cron: backup diario del vault -------------------
 setup_cron() {
     banner "Cron de backup"
@@ -280,7 +299,7 @@ setup_obsidian_templates
 setup_opencode
 setup_configs
 setup_docs
-setup_cron
+setup_obsidian_sync
 setup_vault
 setup_skills
 
