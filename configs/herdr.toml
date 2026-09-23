@@ -1,0 +1,17 @@
+# herdr config — multiplexor agent-aware
+# Herdr usa ctrl+b como prefix por defecto (mismo que tmux)
+
+[theme]
+name = "catppuccin"
+
+[keys]
+prefix = "ctrl+b"
+
+[terminal]
+default_shell = ""
+
+[ui]
+mouse_capture = true
+
+[experimental]
+pane_history = false

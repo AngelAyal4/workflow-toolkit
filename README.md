@@ -20,7 +20,7 @@ Workflow Toolkit es un **ecosistema de desarrollo** que organiza tu entorno de t
 
 **Antes:** Configuraciones dispersas, aliases perdidos, cada proyecto empieza de cero, sin memoria entre sesiones.
 
-**Después:** Un `git clone` + `./setup.sh` y tenés todo: tmux, aliases, agentes de IA, plantillas de Obsidian, y un flujo de trabajo estructurado con SDD (Spec-Driven Development).
+**Después:** Un `git clone` + `./setup.sh` y tenés todo: herdr (multiplexor agent-aware), aliases, agentes de IA, plantillas de Obsidian, y un flujo de trabajo estructurado con SDD (Spec-Driven Development).
 
 ---
 
@@ -53,11 +53,11 @@ chmod +x setup.sh
 ```
 
 Esto instala y configura:
-- Paquetes base (git, curl, fzf, ripgrep, direnv, tmux, docker)
+- Paquetes base (git, curl, fzf, ripgrep, direnv, herdr, docker)
 - Node.js LTS
 - Ollama + modelos locales
 - Aliases de shell + hook direnv
-- Config de tmux (prefijo C-a, mouse on)
+- Config de herdr (multiplexor agent-aware, prefix ctrl+b)
 - Scripts del workspace
 - Plantillas de Obsidian
 - Config de OpenCode
@@ -75,22 +75,22 @@ ws pern cashinsight
 ```
 
 Esto crea y abre automáticamente en la terminal desde la que ejecutaste `ws`:
-- Sesión de tmux con 5 ventanas: terminal, OpenCode plan/build/test, DB
+- Workspace de Herdr con tabs: terminal, hermes, opencode plan/build/qa, DB
 - Carpeta `agentWorkspace/` con specs y planes por área (backend, frontend, qa, devops, docs)
 - Proyecto de Hermes Desktop anclado a `PROJECT_PATH`
 
-Ventanas de tmux:
-| Ventana | Contenido | Modelo |
-|---------|-----------|--------|
-| `*-hermes` | Hermes (chat interactivo) | LongCat 2.0 (Nous, xhigh reasoning) |
+Tabs de Herdr:
+| Tab | Contenido | Modelo |
+|-----|-----------|--------|
+| `hermes` | Hermes (chat interactivo) | LongCat 2.0 (Nous, xhigh reasoning) |
 | `opencode-plan` | OpenCode TUI — plan técnico | GLM-5.3-Flash (Go) |
 | `opencode-build` | OpenCode TUI — implementación | DeepSeek V4.1 Flash (Go) |
 | `opencode-qa` | OpenCode TUI — QA y Security | Muse Spark 1.3 (Go) |
 | `wp`/`mongo`/`postgres` | Base de datos (según stack) | — |
 
-La ventana de Hermes **no** se crea dentro de tmux: el trabajo con Hermes se hace desde la interfaz Desktop. Para salir del tmux sin cerrar la sesión, usá `Ctrl-b d`. Para volver a entrar manualmente:
+El tab de Hermes **no** se crea dentro de Herdr: el trabajo con Hermes se hace desde la interfaz Desktop. Para salir de Herdr sin cerrar la sesión, usá `Ctrl+b q`. Para volver a entrar manualmente:
 ```bash
-tmux attach -t ws-mern-taskboard
+herdr
 ```
 
 Estructura generada:
@@ -208,8 +208,8 @@ workflow-toolkit/
 | **Obsidian** | Specs y planes como notas vinculadas al proyecto |
 | **Git** | Cada feature = una spec + un branch corto |
 | **Docker** | Stacks con docker-compose (PostgreSQL, MongoDB) |
-| **tmux** | Multiplexor principal (prefijo C-a) |
-| **Zellij** | Multiplexor secundario con layouts predefinidos |
+| **Herdr** | Multiplexor agent-aware (prefix ctrl+b, tracks agent state) |
+| **tmux** | Multiplexor legacy (solo si ya tenés sesiones activas) |
 | **eGEOagents** | AI SEO / citabilidad LLM (opcional) |
 
 ---

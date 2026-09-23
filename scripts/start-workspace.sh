@@ -1,5 +1,5 @@
 #!/bin/bash
-# start-workspace.sh — Inicia tu entorno de desarrollo completo
+# start-workspace.sh — Inicia tu entorno de desarrollo completo con Herdr
 
 WORKFLOW_STACK="${WORKFLOW_STACK:-$HOME/workflow-toolkit}"
 PROJECT_TYPE=$1
@@ -29,7 +29,7 @@ if [ ! -d "$PROJECT_PATH" ]; then
         cd "$PROJECT_PATH" || exit
         
         case $PROJECT_TYPE in
-                        mern)
+            mern)
                 mkdir -p client server/routes server/models server/controllers server/middleware server/tests
                 
                 # Inicializar Node.js
@@ -55,8 +55,8 @@ if [ ! -d "$PROJECT_PATH" ]; then
                 echo '.env' >> .gitignore
                 echo 'coverage/' >> .gitignore
                 echo 'prompts/' >> .gitignore
-        echo 'agentWorkspace/' >> .gitignore
-                
+                echo 'agentWorkspace/' >> .gitignore
+        
                 echo "version: \"3.8\"" > docker-compose.yml
                 echo "services:" >> docker-compose.yml
                 echo "  mongo:" >> docker-compose.yml
@@ -167,8 +167,8 @@ EOF
                 echo '.env' >> .gitignore
                 echo 'coverage/' >> .gitignore
                 echo 'prompts/' >> .gitignore
-        echo 'agentWorkspace/' >> .gitignore
-                
+                echo 'agentWorkspace/' >> .gitignore
+        
                 echo "version: \"3.8\"" > docker-compose.yml
                 echo "services:" >> docker-compose.yml
                 echo "  postgres:" >> docker-compose.yml
@@ -251,7 +251,7 @@ EOF
                 # .env.example (sin secretos)
                 cat > .env.example <<'EOF'
 # PostgreSQL (Docker local)
-DATABASE_URL=postgresql://user:pass@localhost:5432/dev
+DATABASE_URL=postgresql://user:***@localhost:5432/dev
 # Supabase/Neon (produccion): postgresql://...@... (host remoto)
 # JWT Secret (generar con: openssl rand -base64 32)
 JWT_SECRET=your-jwt-secret-here
@@ -340,33 +340,33 @@ EOF
         
         cp "$VAULT_PATH/02-Templates/Proyecto Template.md" "$PROJECT_PATH/AGENTS.md"
         
-                # Sistema de memoria del proyecto (tipo Anthropic): carpeta + indice
-                mkdir -p "$PROJECT_PATH/memory"
-                if [ ! -f "$PROJECT_PATH/memory/MEMORY.md" ]; then
-                    printf '# MEMORY.md — Indice de memoria del proyecto\n\n(Un archivo por tema en memory/, cada entrada: `- [Title](file.md) — hook` <150 chars)\n' > "$PROJECT_PATH/memory/MEMORY.md"
-                fi
+        # Sistema de memoria del proyecto (tipo Anthropic): carpeta + indice
+        mkdir -p "$PROJECT_PATH/memory"
+        if [ ! -f "$PROJECT_PATH/memory/MEMORY.md" ]; then
+            printf '# MEMORY.md — Indice de memoria del proyecto\n\n(Un archivo por tema en memory/, cada entrada: `- [Title](file.md) — hook` <150 chars)\n' > "$PROJECT_PATH/memory/MEMORY.md"
+        fi
         
-                # Carpetas de agentWorkspace (regla suprema: specs y plans por área)
-                mkdir -p "$PROJECT_PATH/agentWorkspace/_master"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/backend/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/backend/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/frontend/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/frontend/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/qa/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/qa/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/devops/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/devops/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/docs/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/docs/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/design-uiux/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/design-uiux/plans"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/security/specs"
-                mkdir -p "$PROJECT_PATH/agentWorkspace/security/plans"
+        # Carpetas de agentWorkspace (regla suprema: specs y planes por área)
+        mkdir -p "$PROJECT_PATH/agentWorkspace/_master"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/backend/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/backend/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/frontend/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/frontend/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/qa/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/qa/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/devops/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/devops/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/docs/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/docs/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/design-uiux/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/design-uiux/plans"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/security/specs"
+        mkdir -p "$PROJECT_PATH/agentWorkspace/security/plans"
         
-                # Estructura OpenSpec
-                mkdir -p "$PROJECT_PATH/openspec/specs"
-                mkdir -p "$PROJECT_PATH/openspec/changes"
-                cp "$WORKFLOW_STACK/openspec/config.yaml" "$PROJECT_PATH/openspec/config.yaml" 2>/dev/null || true
+        # Estructura OpenSpec
+        mkdir -p "$PROJECT_PATH/openspec/specs"
+        mkdir -p "$PROJECT_PATH/openspec/changes"
+        cp "$WORKFLOW_STACK/openspec/config.yaml" "$PROJECT_PATH/openspec/config.yaml" 2>/dev/null || true
         echo "export PROJECT_TYPE=\"$PROJECT_TYPE\"" >> "$PROJECT_PATH/.envrc"
         echo "export OPENAI_API_KEY=\"not-needed-local\"" >> "$PROJECT_PATH/.envrc"
         echo "export OPENCODE_MODEL=\"llama2-uncensored\"" >> "$PROJECT_PATH/.envrc"
@@ -390,7 +390,7 @@ EOF
     fi
 fi
 
-# 2. Abrir Obsidian (solo si no esta ya corriendo — si esta abierto, el 2do lanzamiento queda colgado esperando lock)
+# 2. Abrir Obsidian (solo si no esta ya corriendo)
 if pgrep -x obsidian >/dev/null 2>&1; then
     echo "Obsidian ya esta abierto. Saltando (evita lock colgado)."
 else
@@ -410,71 +410,151 @@ if [ -f "docker-compose.yml" ]; then
     docker compose up -d
 fi
 
-# 7. Previo: matar opencode CLI huérfano (evita procesos zombies)
+# 6. Previo: matar opencode CLI huérfano
 pkill -9 -u "$USER" -f "opencode -m" 2>/dev/null
 pkill -9 -u "$USER" -x opencode 2>/dev/null
 sync
 
-# 8. Iniciar workspace en tmux (mas estable que zellij: sin bug de sockets huerfanos)
-echo "Iniciando workspace $PROJECT_TYPE/$PROJECT_NAME en tmux..."
-SESSION="ws-$PROJECT_TYPE-$PROJECT_NAME"
+# 7. Iniciar workspace en Herdr
+echo "Iniciando workspace $PROJECT_TYPE/$PROJECT_NAME en Herdr..."
+WORKSPACE_LABEL="$PROJECT_TYPE-$PROJECT_NAME"
+SESSION_NAME="ws-$PROJECT_TYPE-$PROJECT_NAME"
 
-# Limpiar una sesion tmux previa del mismo proyecto (si existe)
-tmux has-session -t "$SESSION" 2>/dev/null && tmux kill-session -t "$SESSION"
+# Asegurar que el servidor está corriendo
+if ! herdr status server >/dev/null 2>&1; then
+    echo "Arrancando servidor Herdr..."
+    herdr server &>/tmp/herdr-server.log &
+    sleep 2
+fi
 
-# Segun stack: modelo de opencode y ventana de db
-OPENCMD_BASE="opencode"
-DB_KIND=""
-case "$PROJECT_TYPE" in
-    mern|mern-nextjs|pern-nextjs|astro) OPENCMD_BASE="opencode" ;;
-esac
+# Verificar si el workspace ya existe (para no duplicar tabs)
+EXISTING_WS=$(herdr workspace list 2>/dev/null | jq -r '.result.workspaces[] | select(.label == "'$WORKSPACE_LABEL'") | .workspace_id' 2>/dev/null)
 
-# Modelos por agente (OpenCode Go)
-OPENCMD_PLAN="$OPENCMD_BASE --model zhipu/glm-5.3-flash --agent plan ."
-OPENCMD_BUILD="$OPENCMD_BASE --model deepseek/deepseek-v4-1-flash --agent build ."
-OPENCMD_TEST="$OPENCMD_BASE --model meta/muse-spark-1.3-contributor --agent test ."
-case "$PROJECT_TYPE" in
-    mern|mern-nextjs)  DB_KIND="mongo" ;;
-    pern|pern-nextjs)  DB_KIND="postgres" ;;
-    astro|astro-wp)    DB_KIND="wp" ;;
-esac
+if [ -n "$EXISTING_WS" ]; then
+    echo "Workspace ya existe: $EXISTING_WS. Reutilizando..."
+    WS_ID="$EXISTING_WS"
+    # Obtener IDs de tabs y panes existentes
+    TABS_JSON=$(herdr tab list --workspace "$WS_ID" 2>&1)
+    TAB_HERMES_ID=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "hermes") | .tab_id')
+    TAB_PLAN_ID=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "opencode-plan") | .tab_id')
+    TAB_BUILD_ID=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "opencode-build") | .tab_id')
+    TAB_QA_ID=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "opencode-qa") | .tab_id')
+    PANE_TERM=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "1") | .tab_id' 2>/dev/null)
+    # Si no hay tab "1", usar el primer pane
+    if [ -z "$PANE_TERM" ]; then
+        PANE_TERM=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[0].pane_id')
+    fi
+    PANE_HERMES=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_HERMES_ID'") | .pane_id' 2>/dev/null | head -1)
+    PANE_PLAN=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_PLAN_ID'") | .pane_id' 2>/dev/null | head -1)
+    PANE_BUILD=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_BUILD_ID'") | .pane_id' 2>/dev/null | head -1)
+    PANE_QA=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_QA_ID'") | .pane_id' 2>/dev/null | head -1)
+    # DB
+    DB_KIND=""
+    case "$PROJECT_TYPE" in
+        mern|mern-nextjs)  DB_KIND="mongo" ;;
+        pern|pern-nextjs)  DB_KIND="postgres" ;;
+        astro|astro-wp)    DB_KIND="wp" ;;
+    esac
+    if [ -n "$DB_KIND" ]; then
+        TAB_DB_ID=$(echo "$TABS_JSON" | jq -r '.result.tabs[] | select(.label == "'$DB_KIND'") | .tab_id')
+        PANE_DB=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_DB_ID'") | .pane_id' 2>/dev/null | head -1)
+    fi
+else
+    # Modelos por agente (OpenCode Go)
+    OPENCMD_BASE="opencode"
+    DB_KIND=""
+    case "$PROJECT_TYPE" in
+        mern|mern-nextjs|pern-nextjs|astro) OPENCMD_BASE="opencode" ;;
+    esac
 
-# Ventana 1: Hermes (chat interactivo en directorio del proyecto)
-tmux new-session -d -s "$SESSION" -c "$PROJECT_PATH" -n "$PROJECT_TYPE-hermes"
-tmux send-keys -t "$SESSION:1.1" "cd $PROJECT_PATH && hermes chat --in $PROJECT_PATH --profile richard-dev --model meituan/longcat-2.0:free --reasoning max" C-m
+    OPENCMD_PLAN="$OPENCMD_BASE --model zhipu/glm-5.3-flash --agent plan ."
+    OPENCMD_BUILD="$OPENCMD_BASE --model deepseek/deepseek-v4-1-flash --agent build ."
+    OPENCMD_TEST="$OPENCMD_BASE --model meta/muse-spark-1.3-contributor --agent test ."
+    case "$PROJECT_TYPE" in
+        mern|mern-nextjs)  DB_KIND="mongo" ;;
+        pern|pern-nextjs)  DB_KIND="postgres" ;;
+        astro|astro-wp)    DB_KIND="wp" ;;
+    esac
 
-# Ventana 2: OpenCode CLI — modo plan
-tmux new-window -t "$SESSION" -n "opencode-plan"
-tmux send-keys -t "$SESSION:opencode-plan.1" "$OPENCMD_PLAN" C-m
+    # Crear workspace (incluye tab y root pane)
+    echo "Creando workspace: $WORKSPACE_LABEL"
+    WS_JSON=$(herdr workspace create --cwd "$PROJECT_PATH" --label "$WORKSPACE_LABEL" --focus 2>&1)
+    WS_ID=$(echo "$WS_JSON" | jq -r '.result.workspace.workspace_id')
+    PANE_TERM=$(echo "$WS_JSON" | jq -r '.result.root_pane.pane_id')
 
-# Ventana 3: OpenCode CLI — modo build
-tmux new-window -t "$SESSION" -n "opencode-build"
-tmux send-keys -t "$SESSION:opencode-build.1" "$OPENCMD_BUILD" C-m
+    if [ -z "$WS_ID" ] || [ "$WS_ID" = "null" ]; then
+        echo "ERROR: No se pudo crear el workspace Herdr"
+        echo "Detalles: $WS_JSON"
+        exit 1
+    fi
 
-# Ventana 4: OpenCode CLI — modo QA y Security
-tmux new-window -t "$SESSION" -n "opencode-qa"
-tmux send-keys -t "$SESSION:opencode-qa.1" "$OPENCMD_TEST" C-m
+    # Crear tabs adicionales
+    echo "Creando tabs..."
+    TAB_HERMES_JSON=$(herdr tab create --workspace "$WS_ID" --label "hermes" --focus 2>&1)
+    TAB_HERMES_ID=$(echo "$TAB_HERMES_JSON" | jq -r '.result.tab.tab_id')
+    PANE_HERMES=$(echo "$TAB_HERMES_JSON" | jq -r '.result.root_pane.pane_id')
 
-# Ventana 5: base de datos (si aplica)
-if [ -n "$DB_KIND" ]; then
-    tmux new-window -t "$SESSION" -n "$DB_KIND"
-    if [ "$PROJECT_TYPE" = "astro" ]; then
-        tmux send-keys -t "$SESSION:$DB_KIND.1" "bash" C-m
-    else
-        tmux send-keys -t "$SESSION:$DB_KIND.1" "docker compose up $DB_KIND" C-m
+    TAB_PLAN_JSON=$(herdr tab create --workspace "$WS_ID" --label "opencode-plan" --focus 2>&1)
+    PANE_PLAN=$(echo "$TAB_PLAN_JSON" | jq -r '.result.root_pane.pane_id')
+
+    TAB_BUILD_JSON=$(herdr tab create --workspace "$WS_ID" --label "opencode-build" --focus 2>&1)
+    PANE_BUILD=$(echo "$TAB_BUILD_JSON" | jq -r '.result.root_pane.pane_id')
+
+    TAB_QA_JSON=$(herdr tab create --workspace "$WS_ID" --label "opencode-qa" --focus 2>&1)
+    PANE_QA=$(echo "$TAB_QA_JSON" | jq -r '.result.root_pane.pane_id')
+
+    # Tab de DB (si aplica)
+    PANE_DB=""
+    if [ -n "$DB_KIND" ]; then
+        TAB_DB_JSON=$(herdr tab create --workspace "$WS_ID" --label "$DB_KIND" --focus 2>&1)
+        PANE_DB=$(echo "$TAB_DB_JSON" | jq -r '.result.root_pane.pane_id')
     fi
 fi
 
-# Volver a la ventana de hermes y attach
-tmux select-window -t "$SESSION:$PROJECT_TYPE-hermes"
-# Re-ajusta la ventana al tamano real del terminal antes de plegarse
-tmux resize-window -A 2>/dev/null
+# Lanzar comandos en cada pane
+# send-text escribe texto en el pane; send-keys enter lo ejecuta
+# Los panes nuevos NO heredan --cwd del workspace, así que forzamos cd primero
 
-# Registrar/activar el proyecto en Hermes Desktop (sin Hermes CLI en tmux)
+echo "Lanzando agentes..."
+
+# Pane terminal (bash simple - ya está listo, no necesita comando)
+# El pane root ya tiene bash interactivo por defecto
+
+# Pane hermes
+herdr pane send-text "$PANE_HERMES" "cd '$PROJECT_PATH' && hermes chat --in '$PROJECT_PATH' --profile richard-dev --model meituan/longcat-2.0:free --reasoning max" 2>/dev/null
+herdr pane send-keys "$PANE_HERMES" enter 2>/dev/null
+
+# Pane opencode plan
+herdr pane send-text "$PANE_PLAN" "cd '$PROJECT_PATH' && $OPENCMD_PLAN" 2>/dev/null
+herdr pane send-keys "$PANE_PLAN" enter 2>/dev/null
+
+# Pane opencode build
+herdr pane send-text "$PANE_BUILD" "cd '$PROJECT_PATH' && $OPENCMD_BUILD" 2>/dev/null
+herdr pane send-keys "$PANE_BUILD" enter 2>/dev/null
+
+# Pane opencode QA
+herdr pane send-text "$PANE_QA" "cd '$PROJECT_PATH' && $OPENCMD_TEST" 2>/dev/null
+herdr pane send-keys "$PANE_QA" enter 2>/dev/null
+
+# Pane DB (si aplica)
+if [ -n "$PANE_DB" ] && [ "$PANE_DB" != "null" ]; then
+    if [ "$PROJECT_TYPE" = "astro" ]; then
+        herdr pane send-text "$PANE_DB" "cd '$PROJECT_PATH' && bash" 2>/dev/null
+        herdr pane send-keys "$PANE_DB" enter 2>/dev/null
+    else
+        herdr pane send-text "$PANE_DB" "cd '$PROJECT_PATH' && docker compose up $DB_KIND" 2>/dev/null
+        herdr pane send-keys "$PANE_DB" enter 2>/dev/null
+    fi
+fi
+
+# Volver al tab de hermes
+herdr tab focus "$TAB_HERMES_ID" 2>/dev/null
+
+# Registrar/activar el proyecto en Hermes Desktop
 hermes project create "$PROJECT_NAME" --primary "$PROJECT_PATH" --use 2>/dev/null || {
-    # Si ya existe, solo activarlo
     hermes project use "$PROJECT_NAME" 2>/dev/null
 }
 
-# El tmux se abre en la terminal desde la que se ejecuto ws
-exec tmux attach -t "$SESSION"
+# Attach a la sesión Herdr (todos los workspaces conviven en la sesión default)
+echo "Workspace listo. Conectando a Herdr..."
+exec herdr
