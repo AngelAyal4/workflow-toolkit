@@ -28,20 +28,36 @@ install_system_pkgs() {
     banner "Paquetes base"
     if ! have apt-get; then
         yellow "  ⚠️ No se detectó apt (Debian/Ubuntu/WSL)."
-        yellow "    Instalá manualmente: git, curl, wget, fzf, ripgrep, direnv, tmux, docker."
+        yellow "    Instalá manualmente: git, curl, wget, fzf, ripgrep, direnv, herdr, docker."
         return 0
     fi
     sudo apt-get update -qq
     sudo apt-get install -y -qq \
         git curl wget unzip \
         fzf ripgrep \
-        direnv tmux \
+        direnv \
         docker.io docker-compose-v2
 
     # Permitir a este usuario usar docker sin sudo (efectivo tras re-login)
     sudo usermod -aG docker "$USER" 2>/dev/null || true
     green "  ✓ paquetes base instalados"
     yellow "  (docker sin sudo: reiniciá sesión o cerrá terminal)"
+}
+
+# ---------- 1b. Herdr (multiplexor agent-aware) ------------------
+install_herdr() {
+    banner "Herdr (multiplexor agent-aware)"
+    if have herdr; then
+        green "  ✓ herdr $(herdr --version 2>/dev/null | awk '{print $2}') ya instalado"
+        return
+    fi
+    if have curl; then
+        curl -fsSL https://herdr.dev/install.sh | sh
+        green "  ✓ herdr instalado"
+        yellow "  (ejecutá 'herdr' para iniciar)"
+    else
+        yellow "  ⚠️ curl no encontrado — instalá herdr manualmente desde https://herdr.dev"
+    fi
 }
 
 # ---------- 2. Node.js LTS --------------------------------------
@@ -83,8 +99,8 @@ setup_shell() {
 # === WORKFLOW STACK ===
 alias ws='~/scripts/start-workspace.sh'
 alias obs='obsidian ~/obsidian-vault &'
-alias tml='tmux ls'
-alias tma='tmux attach -t'
+alias hdl='herdr workspace list'
+alias hda='herdr'
 alias da='direnv allow'
 alias dr='direnv reload'
 alias oc='opencode'
@@ -123,12 +139,12 @@ setup_gh() {
     fi
 }
 
-# ---------- 5. Config de tmux (multiplexor principal) ----------
-setup_tmux() {
-    banner "Config de tmux (multiplexor principal)"
-    mkdir -p "$HOME/.config/tmux"
-    cp "$SCRIPT_DIR/configs/tmux.conf" "$HOME/.config/tmux/tmux.conf" 2>/dev/null || true
-    green "  ✓ tmux.conf listo (prefijo C-a, mouse on)"
+# ---------- 5. Config de herdr (multiplexor agent-aware) ----------
+setup_herdr() {
+    banner "Config de herdr (multiplexor agent-aware)"
+    mkdir -p "$HOME/.config/herdr"
+    cp "$SCRIPT_DIR/configs/herdr.toml" "$HOME/.config/herdr/config.toml" 2>/dev/null || true
+    green "  ✓ herdr config listo (prefix ctrl+b)"
 }
 
 # ---------- 6. Scripts propios ---------------------------------
@@ -252,11 +268,12 @@ echo "     Distro: $(uname -s) $(uname -m)"
 echo ""
 
 install_system_pkgs
+install_herdr
 install_node
 install_ollama
 setup_shell
 setup_gh
-setup_tmux
+setup_herdr
 setup_scripts
 setup_opencode_desktop
 setup_obsidian_templates
