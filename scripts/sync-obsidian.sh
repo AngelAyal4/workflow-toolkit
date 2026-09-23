@@ -11,6 +11,12 @@ if [ ! -d .git ]; then
     exit 1
 fi
 
+# Cargar token GitHub desde .bashrc (cron no lo carga)
+GITHUB_TOKEN=$(grep '^export GITHUB_TOKEN=' ~/.bashrc 2>/dev/null | sed 's/.*="//' | cut -d'"' -f1)
+if [ -n "$GITHUB_TOKEN" ]; then
+    export GITHUB_TOKEN
+fi
+
 # Configurar identidad git si no está
 if ! git config user.name >/dev/null 2>&1; then
     git config user.name "AngelAyal4"
