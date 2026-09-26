@@ -88,7 +88,7 @@ Tabs de Herdr:
 | `opencode-qa` | OpenCode TUI — QA y Security | Muse Spark 1.3 (Go) |
 | `wp`/`mongo`/`postgres` | Base de datos (según stack) | — |
 
-El tab de Hermes **no** se crea dentro de Herdr: el trabajo con Hermes se hace desde la interfaz Desktop. Para salir de Herdr sin cerrar la sesión, usá `Ctrl+b q`. Para volver a entrar manualmente:
+El tab de `hermes` **sí** se crea dentro de Herdr (perfil `richard-dev`, LongCat 2.0, reasoning max); también podés trabajar desde Hermes Desktop apuntando al mismo `PROJECT_PATH`. Para salir de Herdr sin cerrar la sesión, usá `Ctrl+b q`. Para volver a entrar manualmente:
 ```bash
 herdr
 ```
