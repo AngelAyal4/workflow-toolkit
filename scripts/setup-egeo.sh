@@ -8,7 +8,6 @@ set -e
 TOOLS_DIR="$HOME/workspace/tools"
 REPO_DIR="$TOOLS_DIR/eGEOagents"
 WORKFLOW="$HOME/workflow-toolkit"
-PROMPT_SRC="$REPO_DIR/.claude/commands"
 PROMPT_DST="$WORKFLOW/prompts/04-geo-optimizer.md"
 
 echo "==> eGEOagents setup"

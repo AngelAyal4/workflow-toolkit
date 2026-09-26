@@ -93,6 +93,9 @@ El tab de Hermes **no** se crea dentro de Herdr: el trabajo con Hermes se hace d
 herdr
 ```
 
+> Si un modelo Go ya no está disponible (`/models` en el TUI no lo lista), sobreescribí por tab sin tocar el script:
+> `OPENCODE_MODEL_PLAN=zhipu/glm-5.1 ws mern mi-app` (vale también `OPENCODE_MODEL_BUILD`, `OPENCODE_MODEL_TEST`, `HERMES_MODEL_TAG`).
+
 Estructura generada:
 ```
 <proyecto>/
@@ -230,7 +233,7 @@ workflow-toolkit/
 |---|---|
 | `docker: permission denied` | Cerrá y reabrí la terminal (grupo docker) |
 | OpenCode no ve Ollama | `ollama serve` en segundo plano + `curl localhost:11434/api/tags` |
-| Hermes rechaza modelo local por contexto <64K | Usá `llama3.1:8b` (128K nativo) en `.envrc` y config |
+| Hermes rechaza modelo local por contexto | Revisá la ventana de contexto del modelo local en `.envrc` y config (qwen2.5 acepta rope scaling hasta 128K) |
 | Alias no funcionan | `source ~/.bashrc` o reabrir terminal |
 | `ws` no crea el proyecto | Asegurate de pasar `s` cuando pregunta "crear? (s/n)" |
 | Skills no aparecen en nueva sesión | El loader se inicializa al start — cerrá y reabrí Hermes |

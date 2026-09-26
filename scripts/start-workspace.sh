@@ -369,9 +369,9 @@ EOF
         cp "$WORKFLOW_STACK/openspec/config.yaml" "$PROJECT_PATH/openspec/config.yaml" 2>/dev/null || true
         echo "export PROJECT_TYPE=\"$PROJECT_TYPE\"" >> "$PROJECT_PATH/.envrc"
         echo "export OPENAI_API_KEY=\"not-needed-local\"" >> "$PROJECT_PATH/.envrc"
-        echo "export OPENCODE_MODEL=\"llama2-uncensored\"" >> "$PROJECT_PATH/.envrc"
+        echo "export OPENCODE_MODEL=\"qwen2.5:7b\"" >> "$PROJECT_PATH/.envrc"
         echo "export OPENCODE_BASE_URL=\"http://localhost:11434\"" >> "$PROJECT_PATH/.envrc"
-        echo "export HERMES_MODEL=\"llama2-uncensored:latest\"" >> "$PROJECT_PATH/.envrc"
+        echo "export HERMES_MODEL=\"qwen2.5:7b\"" >> "$PROJECT_PATH/.envrc"
         echo "export HERMES_PROVIDER=\"ollama\"" >> "$PROJECT_PATH/.envrc"
         echo "export HERMES_BASE_URL=\"http://localhost:11434\"" >> "$PROJECT_PATH/.envrc"
         
@@ -418,7 +418,6 @@ sync
 # 7. Iniciar workspace en Herdr
 echo "Iniciando workspace $PROJECT_TYPE/$PROJECT_NAME en Herdr..."
 WORKSPACE_LABEL="$PROJECT_TYPE-$PROJECT_NAME"
-SESSION_NAME="ws-$PROJECT_TYPE-$PROJECT_NAME"
 
 # Asegurar que el servidor está corriendo
 if ! herdr status server >/dev/null 2>&1; then
@@ -460,16 +459,22 @@ if [ -n "$EXISTING_WS" ]; then
         PANE_DB=$(herdr pane list --workspace "$WS_ID" 2>/dev/null | jq -r '.result.panes[] | select(.tab_id == "'$TAB_DB_ID'") | .pane_id' 2>/dev/null | head -1)
     fi
 else
-    # Modelos por agente (OpenCode Go)
+    # Modelos por agente (OpenCode Go).
+    # Override sin tocar el script: OPENCODE_MODEL_PLAN / _BUILD / _TEST,
+    # HERMES_MODEL_TAG. Verificar con /models en el TUI (el catalogo Go rota).
+    OPENCODE_MODEL_PLAN="${OPENCODE_MODEL_PLAN:-zhipu/glm-5.3-flash}"
+    OPENCODE_MODEL_BUILD="${OPENCODE_MODEL_BUILD:-deepseek/deepseek-v4-1-flash}"
+    OPENCODE_MODEL_TEST="${OPENCODE_MODEL_TEST:-meta/muse-spark-1.3-contributor}"
+    HERMES_MODEL_TAG="${HERMES_MODEL_TAG:-meituan/longcat-2.0:free}"
     OPENCMD_BASE="opencode"
     DB_KIND=""
     case "$PROJECT_TYPE" in
         mern|mern-nextjs|pern-nextjs|astro) OPENCMD_BASE="opencode" ;;
     esac
 
-    OPENCMD_PLAN="$OPENCMD_BASE --model zhipu/glm-5.3-flash --agent plan ."
-    OPENCMD_BUILD="$OPENCMD_BASE --model deepseek/deepseek-v4-1-flash --agent build ."
-    OPENCMD_TEST="$OPENCMD_BASE --model meta/muse-spark-1.3-contributor --agent test ."
+    OPENCMD_PLAN="$OPENCMD_BASE --model $OPENCODE_MODEL_PLAN --agent plan ."
+    OPENCMD_BUILD="$OPENCMD_BASE --model $OPENCODE_MODEL_BUILD --agent build ."
+    OPENCMD_TEST="$OPENCMD_BASE --model $OPENCODE_MODEL_TEST --agent test ."
     case "$PROJECT_TYPE" in
         mern|mern-nextjs)  DB_KIND="mongo" ;;
         pern|pern-nextjs)  DB_KIND="postgres" ;;
@@ -521,7 +526,7 @@ echo "Lanzando agentes..."
 # El pane root ya tiene bash interactivo por defecto
 
 # Pane hermes
-herdr pane send-text "$PANE_HERMES" "cd '$PROJECT_PATH' && hermes chat --in '$PROJECT_PATH' --profile richard-dev --model meituan/longcat-2.0:free --reasoning max" 2>/dev/null
+herdr pane send-text "$PANE_HERMES" "cd '$PROJECT_PATH' && hermes chat --in '$PROJECT_PATH' --profile richard-dev --model $HERMES_MODEL_TAG --reasoning max" 2>/dev/null
 herdr pane send-keys "$PANE_HERMES" enter 2>/dev/null
 
 # Pane opencode plan

@@ -32,11 +32,23 @@ install_system_pkgs() {
         return 0
     fi
     sudo apt-get update -qq
+    # Docker: no pisar una instalacion existente (p. ej. Docker Engine
+    # desde el repo oficial). Solo instalar desde apt lo que falte.
+    local docker_pkgs=""
+    if ! have docker; then
+        docker_pkgs="docker.io docker-compose-v2"
+    elif ! docker compose version >/dev/null 2>&1; then
+        yellow "  ⚠️ docker existe pero sin plugin compose — instalo docker-compose-v2"
+        docker_pkgs="docker-compose-v2"
+    else
+        green "  ✓ docker ya instalado ($(docker --version | head -1)), no lo toco"
+    fi
+    # shellcheck disable=SC2086
     sudo apt-get install -y -qq \
         git curl wget unzip \
         fzf ripgrep \
         direnv \
-        docker.io docker-compose-v2
+        $docker_pkgs
 
     # Permitir a este usuario usar docker sin sudo (efectivo tras re-login)
     sudo usermod -aG docker "$USER" 2>/dev/null || true
@@ -79,10 +91,14 @@ install_ollama() {
         curl -fsSL https://ollama.com/install.sh | sh
     fi
     if have ollama; then
-        ollama pull llama2-uncensored 2>/dev/null || true
-        ollama pull llama3.1:8b 2>/dev/null || true
-        green "  ✓ Ollama listo (modelos: llama2-uncensored, llama3.1:8b)"
-        yellow "  (si Hermes exige >=64K de contexto, usá llama3.1:8b)"
+        # Modelos configurables: OLLAMA_MODELS="qwen2.5:7b gemma3:4b" ./setup.sh
+        local model
+        # shellcheck disable=SC2086
+        for model in ${OLLAMA_MODELS:-qwen2.5:7b gemma3:4b}; do
+            ollama pull "$model" 2>/dev/null || yellow "  ⚠️ no se pudo bajar $model"
+        done
+        green "  ✓ Ollama listo (modelos: ${OLLAMA_MODELS:-qwen2.5:7b gemma3:4b})"
+        yellow "  (si Hermes exige >=64K de contexto, elegí un modelo con ventana larga)"
     fi
 }
 
@@ -189,7 +205,7 @@ setup_opencode() {
   "$schema": "https://opencode.ai/config.json",
   "provider": {
     "ollama": {
-      "models": { "ollama/llama2-uncensored": { "_launch": true } },
+      "models": { "ollama/qwen2.5:7b": { "_launch": true } },
       "name": "Ollama (local)",
       "npm": "@ai-sdk/openai-compatible",
       "options": { "baseURL": "http://127.0.0.1:11434/v1" }
@@ -238,24 +254,23 @@ setup_obsidian_sync() {
         yellow "  ⚠️ sync-obsidian.sh no encontrado en el repo"
     fi
 
-    # Cron de sync cada 15 minutos (reemplaza backup local)
+    # Cron de sync cada 15 minutos (reemplaza backup local). Idempotente:
+    # se puede correr N veces sin duplicar lineas.
     mkdir -p "$HOME/backups/obsidian"
-    (crontab -l 2>/dev/null | grep -v 'backup-obsidian.sh') | crontab -
-    (crontab -l 2>/dev/null; echo "*/15 * * * * \${HOME}/scripts/sync-obsidian.sh >> \${HOME}/backups/obsidian/sync.log 2>&1") | crontab
-    green "  ✓ cron sync cada 15 min configurado"
+    if crontab -l 2>/dev/null | grep -qF 'backup-obsidian.sh'; then
+        crontab -l 2>/dev/null | grep -v 'backup-obsidian.sh' | crontab -
+        yellow "  (linea legacy de backup-obsidian eliminada del cron)"
+    fi
+    local sync_line="*/15 * * * * \${HOME}/scripts/sync-obsidian.sh >> \${HOME}/backups/obsidian/sync.log 2>&1"
+    if crontab -l 2>/dev/null | grep -qF 'sync-obsidian.sh'; then
+        green "  ✓ cron sync ya estaba (sin duplicar)"
+    else
+        (crontab -l 2>/dev/null; echo "$sync_line") | crontab -
+        green "  ✓ cron sync cada 15 min configurado"
+    fi
 }
 
-# ---------- 9. Cron: backup diario del vault -------------------
-setup_cron() {
-    banner "Cron de backup"
-    local line="0 2 * * * ${HOME}/scripts/backup-obsidian.sh >> ${HOME}/backups/obsidian/backup.log 2>&1"
-    mkdir -p "$HOME/backups/obsidian"
-    ( crontab -l 2>/dev/null | grep -qv 'backup-obsidian.sh' ) && \
-        ( crontab -l 2>/dev/null; echo "$line" ) | crontab || yellow "  ⚠️ no pude tocar crontab"
-    green "  ✓ backup programado a las 02:00"
-}
-
-# ---------- 10. Obsidian vault (clonar el vault?) --------------
+# ---------- 9. Obsidian vault (clonar el vault?) --------------
 setup_vault() {
     banner "Vault de Obsidian"
     if [ -d "$HOME/obsidian-vault/.git" ]; then
@@ -266,7 +281,7 @@ setup_vault() {
     fi
 }
 
-# ---------- 11. Skills de Hermes ---------------------------------
+# ---------- 10. Skills de Hermes ---------------------------------
 setup_skills() {
     banner "Skills de Hermes"
     mkdir -p "$HOME/.hermes/skills"

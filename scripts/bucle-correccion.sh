@@ -100,9 +100,9 @@ get_verdict() {
         echo "NO_REPORT"
         return
     fi
-    if grep -qi "**APROBADO**" "$QA_REPORT" || grep -qi "APROBADO" "$QA_REPORT"; then
+    if grep -qiF "**APROBADO**" "$QA_REPORT" || grep -qi "APROBADO" "$QA_REPORT"; then
         echo "APROBADO"
-    elif grep -qi "**RECHAZADO**" "$QA_REPORT" || grep -qi "RECHAZADO" "$QA_REPORT"; then
+    elif grep -qiF "**RECHAZADO**" "$QA_REPORT" || grep -qi "RECHAZADO" "$QA_REPORT"; then
         echo "RECHAZADO"
     else
         echo "SIN_VEREDICTO"

@@ -125,9 +125,6 @@ check_config_consistency() {
     
     echo -e "\n${BLUE}Verificando consistencia con config.yaml: ${filename}${NC}"
     
-    # Extraer stack del config
-    local stack
-    stack=$(grep -A5 "^context:" openspec/config.yaml 2>/dev/null | grep -i "stack\|tech" | head -1 || echo "")
     
     # Verificar que el área del spec es válida
     local area

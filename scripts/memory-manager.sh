@@ -6,14 +6,12 @@ set -euo pipefail
 
 # Configuración
 MEMORY_DIR="${MEMORY_DIR:-./memory}"
-GLOBAL_MEMORY_DIR="${HOME}/.config/workflow-toolkit/memory/global"
 MAX_MEMORY_AGE_DAYS="${MAX_MEMORY_AGE_DAYS:-90}"
 MAX_MEMORY_INDEX_LINES=200
 
 # Colores
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
 NC='\033[0m'
 
 # Función: inicializar estructura de memoria

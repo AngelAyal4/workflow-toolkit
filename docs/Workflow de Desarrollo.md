@@ -206,8 +206,8 @@ ws mern blog-gpt
 |-------|----------------------|-------------------|----------------|
 | **Brainstorming** | Muse Spark 1.3 | LongCat 2.0 | qwen3.5:27b |
 | **Plan** | GLM-5.3-Flash | Step 3.7 Flash | deepseek-v4-flash |
-| **Build** | DeepSeek V4 Flash | Laguna XS 2.1 | llama2-uncensored |
-| **Test/QA** | Muse Spark 1.3 | Ling 3.0 Flash Fin | llama2-uncensored |
+| **Build** | DeepSeek V4 Flash | Laguna XS 2.1 | qwen2.5:7b |
+| **Test/QA** | Muse Spark 1.3 | Ling 3.0 Flash Fin | gemma3:4b |
 
 ### Regla de oro
 

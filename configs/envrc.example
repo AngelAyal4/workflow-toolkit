@@ -9,9 +9,9 @@ export PROJECT_TYPE="mern"   # php | mern | pern | python | astro
 
 # --- Modelos locales (Ollama) ---
 export OPENAI_API_KEY="not-needed-local"
-export OPENCODE_MODEL="llama2-uncensored"
+export OPENCODE_MODEL="qwen2.5:7b"
 export OPENCODE_BASE_URL="http://localhost:11434"
-export HERMES_MODEL="llama2-uncensored:latest"
+export HERMES_MODEL="qwen2.5:7b"
 export HERMES_PROVIDER="ollama"
 export HERMES_BASE_URL="http://localhost:11434"
 

@@ -4,20 +4,32 @@
 
 set -euo pipefail
 
-# Modelos por tarea (OpenCode Go)
-MODELS_PLAN="zhipu/glm-5.3-flash"
-MODELS_BUILD="deepseek/deepseek-v4-1-flash"
-MODELS_TEST="meta/muse-spark-1.3-contributor"
-
-# Modelos por tarea (Nous Portal - free)
-MODELS_NOUS_PLAN="stepfun/step-3.7-flash:free"
-MODELS_NOUS_BUILD="poolside/laguna-xs-2.1:free"
-MODELS_NOUS_TEST="ling-3.0-flash-fin:free"
-
-# Modelos por tarea (Local - Ollama)
-MODELS_LOCAL_PLAN="ollama/deepseek-v4-flash"
-MODELS_LOCAL_BUILD="ollama/llama2-uncensored"
-MODELS_LOCAL_TEST="ollama/llama2-uncensored"
+# Catalogo por tarea: [opencode]=OpenCode Go, [nous]=Nous Portal, [local]=Ollama.
+# get_model_for_task lo lee via nameref MODEL_TASK_<TAREA>.
+# shellcheck disable=SC2034  # se lee por nameref en get_model_for_task
+declare -A MODEL_TASK_BRAINSTORM=(
+    [opencode]="zhipu/glm-5.3-flash"
+    [nous]="stepfun/step-3.7-flash:free"
+    [local]="ollama/qwen2.5:7b"
+)
+# shellcheck disable=SC2034  # se lee por nameref en get_model_for_task
+declare -A MODEL_TASK_PLAN=(
+    [opencode]="zhipu/glm-5.3-flash"
+    [nous]="stepfun/step-3.7-flash:free"
+    [local]="ollama/qwen2.5:7b"
+)
+# shellcheck disable=SC2034  # se lee por nameref en get_model_for_task
+declare -A MODEL_TASK_BUILD=(
+    [opencode]="deepseek/deepseek-v4-1-flash"
+    [nous]="poolside/laguna-xs-2.1:free"
+    [local]="ollama/qwen2.5:7b"
+)
+# shellcheck disable=SC2034  # se lee por nameref en get_model_for_task
+declare -A MODEL_TASK_TEST=(
+    [opencode]="meta/muse-spark-1.3-contributor"
+    [nous]="ling-3.0-flash-fin:free"
+    [local]="ollama/gemma3:4b"
+)
 
 # Modelo para Hermes (Richard)
 MODEL_HERMES="meituan/longcat-2.0:free"
@@ -64,8 +76,13 @@ check_ollama() {
 get_model_for_task() {
     local task="${1:-build}"
     
-    # Seleccionar el array correcto
-    local -n models_ref="MODELS_${task^^}"
+    # Seleccionar el array correcto (falla si la tarea no existe en el catalogo)
+    local catalog="MODEL_TASK_${task^^}"
+    if ! declare -p "$catalog" &>/dev/null; then
+        echo "Tarea desconocida: $task" >&2
+        return 1
+    fi
+    local -n models_ref="$catalog"
     
     # Prioridad 1: OpenCode Go
     if check_opencode_go; then
@@ -111,6 +128,7 @@ print_status() {
     else
         echo "  Ollama:       ❌ no disponible"
     fi
+    echo "  Hermes:       $MODEL_HERMES (perfil richard-dev)"
     
     echo ""
     echo "=== Modelos por Tarea ==="
