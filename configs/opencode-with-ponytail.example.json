@@ -1,0 +1,100 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["@dietrichgebert/ponytail"],
+  "provider": {
+    "ollama": {
+      "models": {
+        "minimax-m2.5:cloud": {
+          "_launch": true,
+          "limit": {
+            "context": 204800,
+            "output": 128000
+          },
+          "name": "minimax-m2.5:cloud"
+        }
+      },
+      "name": "Ollama (local)",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
+      }
+    }
+  },
+  "mcp": {
+    "obsidian": {
+      "type": "local",
+      "command": ["npx", "-y", "obsidian-mcp", "~/obsidian-vault"],
+      "enabled": true
+    },
+    "obsidian-context": {
+      "type": "local",
+      "command": ["~/scripts/obsidian-context-bridge.py"],
+      "enabled": true
+    }
+  },
+  "agent": {
+    "plan": {
+      "description": "Planificación técnica: convierte specs en planes de implementación ejecutables con fases, tareas y criterios de éxito.",
+      "mode": "primary",
+      "prompt": "{file:./prompts/plan-mode.md}",
+      "permission": {
+        "edit": {
+          "agentWorkspace/*/plans/*.md": "allow",
+          "agentWorkspace/_master/plan.md": "allow"
+        },
+        "bash": {
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "grep *": "allow",
+          "rg *": "allow"
+        }
+      }
+    },
+    "build": {
+      "description": "Implementación de specs: ejecuta planes de implementación siguiendo especificaciones OpenSpec.",
+      "mode": "primary",
+      "prompt": "{file:./prompts/build-mode.md}",
+      "permission": {
+        "edit": {
+          "*": "allow"
+        },
+        "bash": {
+          "*": "allow"
+        }
+      }
+    },
+    "test": {
+      "description": "QA + seguridad: verifica funcionalidad, seguridad y calidad de lo implementado contra la spec; reporta sin modificar código de producción.",
+      "mode": "primary",
+      "prompt": "{file:./prompts/testeador.md}",
+      "permission": {
+        "edit": {
+          "*": "deny",
+          "*.test.*": "allow",
+          "*.spec.*": "allow",
+          "*/tests/**": "allow",
+          "*/test/**": "allow",
+          "*/__tests__/**": "allow"
+        },
+        "bash": {
+          "*": "ask",
+          "npm test*": "allow",
+          "npm run test*": "allow",
+          "npx vitest*": "allow",
+          "npx jest*": "allow",
+          "npm run lint*": "allow",
+          "npm run build*": "allow",
+          "npx tsc*": "allow",
+          "npm audit*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "git log*": "allow",
+          "grep *": "allow",
+          "rg *": "allow",
+          "curl *": "allow"
+        }
+      }
+    }
+  }
+}
